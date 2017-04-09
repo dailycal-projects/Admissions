@@ -1,0 +1,263 @@
+
+{% load static %}
+
+
+{% block content %}
+
+<head>
+  <title>Admission Chances</title>
+
+  <!-- <meta charset="utf-8"> 
+    <link href="nv/build/nv.d3.css" rel="stylesheet" type="text/css">
+    <script src="d3v3/d3.js" charset="utf-8"></script>
+    <script src="nv/build/nv.d3.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script type="text/javascript" src="filterAdmitted.js"></script>
+    <script type="text/javascript" src="dropdown.js"></script>-->
+
+    <style>
+        text {
+            font: 12px sans-serif;
+        }
+        svg {
+            display: block;
+        }
+        html, body, svg {
+            margin: 0px;
+            padding: 0px;
+            height: 100%;
+            width: 100%;
+        }
+        .myrow {
+            font-size: 0;
+        }
+        .myrow > * {
+            float: none;
+            display: inline-block;
+            font-size: 14px; /* if using LESS it's quicker to just use @font-size-base */
+        }
+        .myrow > *:last-child {
+            vertical-align: center;
+        }
+        .myrow p:last-child {
+            margin-bottom: 0; /* optional */
+        }
+        .tick:not(.zero) {
+          opacity: 0;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+<form action ='#' method ="get"> 
+<div class = "row myrow">
+    
+    <div class = "col-md-2">
+        <div class="form-group">
+          <label for="sel1">Ethnicity:</label>
+          <select class="form-control" id="ethnicity">
+            <option>African American</option>
+            <option>Asian</option>
+            <option>Chicano/Latino</option>
+            <option>Decline to State</option>
+            <option>International</option>
+            <option>Native American/Alaska Native</option>
+            <option>Pacific Islander</option>
+            <option>White</option>
+          </select>
+        </div>
+    </div>
+
+    <div class = "col-md-2">
+        <div class="form-group">
+          <label for="sel1">Gender:</label>
+          <select class="form-control" id="gender">
+            <option>Female</option>
+            <option>Male</option>
+            <option>Decline to State</option>
+          </select>
+        </div>
+    </div>
+
+    <div class = "col-md-2">
+        <div class="form-group">
+          <label for="sel1">Residency:</label>
+          <select class="form-control" id="residency">
+            <option>CA Resident</option>
+            <option>Out of State Domestic</option>
+            <option>International</option>
+          </select>
+        </div>
+    </div>
+
+    <div class = "col-md-2">
+        <div class="form-group">
+          <label for="sel1">Intended College:</label>
+          <select class="form-control" id="college">
+            <option>Clg of Chemistry</option>
+            <option>Clg of Engineering</option>
+            <option>College of Environmental Design</option>
+            <option>Clg of Letters &amp; Science</option>
+            <option>Clg of Natural Resources</option>
+          </select>
+        </div>
+    </div>
+    
+    <div class = "col-md-2" >
+        <input name="updateButton" 
+           type="button" 
+           class="btn btn-outline-primary"
+           value="What are my chances?" 
+           onclick='renderChart(getEthnicity(), getGender(), getResidency(), getCollege())' />
+    </div>
+</div>
+</form>
+
+ <script type="text/javascript">
+    /*var rows = 3
+
+
+    d3.csv("static/interactivechart/js/testdata.csv", function(d) {
+        console.log("soup");
+    for (i = 1; i < rows; ++i)
+         console.log(d[i]);
+    return 3;});*/
+
+    function getEthnicity() {
+    var e = document.getElementById("ethnicity");
+    return e.options[e.selectedIndex].text;
+    }
+
+    function getGender() {
+        var e = document.getElementById("gender");
+        return e.options[e.selectedIndex].text;
+    }
+
+    function getResidency() {
+        var e = document.getElementById("residency");
+        return e.options[e.selectedIndex].text;
+    }
+
+    function getCollege() {
+        var e = document.getElementById("college");
+        return e.options[e.selectedIndex].text;
+    }
+        
+var parseYear = d3.time.format("%Y-%y").parse
+function renderChart(ethnicity, gender, residency, college) {
+
+    d3.csv("static/interactivechart/csv/applieddata2.csv", function(line1) {
+        
+        var datavalues1 = []
+        var datavalues2 = []
+        var datavalues3 = []
+
+        line1 = line1.filter(function(row) {
+            return row['Ethnicity'] == ethnicity && row['Gender'] == gender && row['Derived Residency'] == residency && row['College'] == college;
+        })
+        
+        line1.forEach(function(d) {
+            d.year = parseYear(d.Academic_Yr);
+            // console.log(d.year)
+            if (d.headcounts = '') {
+                d.headcounts = 0;
+            } else {
+                d.headcounts = +d.Headcounts;
+            }
+            
+            datavalues1.push({x: d.year, y: d.headcounts})
+        })
+        console.log(line1);
+
+        d3.csv("static/interactivechart/csv/admitteddata2.csv", function(line2) {
+            line2 = line2.filter(function(row) {
+            return row['Ethnicity'] == ethnicity && row['Gender'] == gender && row['Derived Residency'] == residency && row['College'] == college;
+            })
+            line2.forEach(function(d) {
+                d.year = parseYear(d.Academic_Yr);
+                // console.log(d.year)
+                if (d.headcounts = '') {
+                    d.headcounts = 0;
+                } else {
+                    d.headcounts = +d.Headcounts;
+                }
+                datavalues2.push({x: d.year, y: d.headcounts})
+            })
+            console.log(line2);
+
+            d3.csv("static/interactivechart/csv/SIReddata2.csv", function(line3) {
+                line3 = line3.filter(function(row) {
+                return row['Ethnicity'] == ethnicity && row['Gender'] == gender && row['Derived Residency'] == residency && row['College'] == college;
+                })
+                line3.forEach(function(d) {
+                    d.year = parseYear(d.Academic_Yr);
+                    // console.log(d.year)
+                    if (d.headcounts = '') {
+                        d.headcounts = 0;
+                    } else {
+                        d.headcounts = +d.Headcounts;
+                    }
+                    datavalues3.push({x: d.year, y: d.headcounts})
+                })
+                console.log(line3);
+            })
+        })
+
+        nv.addGraph(function() {
+            var myData=[ 
+                         {values: datavalues1, key: 'Applied', color: '#0D84F2', strokeWidth: '3.5'}, 
+                         {values: datavalues2, key: 'Admitted', color: '#76D4F9', strokeWidth: '3.5'},
+                         {values: datavalues3, key: 'Enrolled', color: '#F5BD12', strokeWidth: '3.5'},
+                    ]
+            var xValues = [];
+            for (var i = 0; i < datavalues1.length; i++) {
+                xValues.push(datavalues1[i].x)
+            }
+            var chart = nv.models.lineChart()
+                    .margin({left: 100})  //Adjust chart margins to give the x-axis some breathing room.
+                    .useInteractiveGuideline(true)  //We want nice looking tooltips and a guideline!
+                    // .transitionDuration(350)  //how fast do you want the lines to transition?
+                    .showLegend(true)       //Show the legend, allowing users to turn on/off line series.
+                    .showYAxis(true)        //Show the y-axis
+                    .showXAxis(true)        //Show the x-axis
+                    // .x(function(d) {return d.year})
+                    // .y(function(d) {return d.studentCount})
+                    .forceY([0,])
+                ;
+
+               
+
+                chart.xAxis     //Chart x-axis settings
+                .axisLabel('Year')
+                .scale(d3.scale.ordinal())
+                
+                .tickFormat(function(d) { return d3.time.format('%Y')(new Date(d)); })
+                .tickValues(xValues)
+                ;
+
+
+                chart.yAxis     //Chart y-axis settings
+                .axisLabel('Number of students')
+
+            
+            console.log(myData)
+
+            d3.select('#chart svg')
+                .datum(myData)
+                .call(chart)
+                ;
+
+            nv.utils.windowResize(function() { chart.update() });
+                return chart;
+        })
+    });
+}
+</script>
+
+<div id ='chart'>
+  <svg style="height: 600px"></svg>
+</div>
+</div>
+</body>
+{% endblock content %}
