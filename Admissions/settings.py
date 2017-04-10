@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'bakery'
 ]
 
 MIDDLEWARE = [
@@ -120,4 +121,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
-# STATIC_ROOT = 'staticfiles'
+STATIC_ROOT = 'staticfiles'
+
+# Bakery
+BUILD_DIR = os.path.join(BASE_DIR, 'build')
+BAKERY_VIEWS = (
+    'interactivechart.views.MainView'
+)
+BAKERY_VIEWS = (
+    'interactivechart.views.MainView'
+)

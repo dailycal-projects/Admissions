@@ -18,8 +18,6 @@ from django.contrib import admin
 from django.conf.urls.static import static
 from django.conf import settings
 
-
 urlpatterns = [
-	url(r'^', include('interactivechart.urls')),
-    url(r'^admin/', admin.site.urls),
-] 
+    url(r'^admission-trends/', include('interactivechart.urls')),
+]
